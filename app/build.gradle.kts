@@ -60,6 +60,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.animation:animation")
     // implementation("androidx.compose.material:material") // Eliminar Material2 si no se usa
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
 
 
