@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -58,7 +59,7 @@ dependencies {
     implementation("androidx.compose.animation:animation")
     // implementation("androidx.compose.material:material") // Eliminar Material2 si no se usa
     implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
