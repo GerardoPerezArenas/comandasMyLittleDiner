@@ -15,4 +15,10 @@ interface TableSpotDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tables: List<TableSpot>)
+    
+    @Query("UPDATE table_spots SET isPaid = :isPaid WHERE id = :tableId")
+    suspend fun updatePaidStatus(tableId: Int, isPaid: Boolean)
+    
+    @Query("UPDATE table_spots SET isOccupied = :isOccupied WHERE id = :tableId")
+    suspend fun updateOccupiedStatus(tableId: Int, isOccupied: Boolean)
 }
