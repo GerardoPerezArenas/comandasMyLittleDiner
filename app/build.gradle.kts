@@ -1,18 +1,17 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.kapt")
 }
 
 android {
     namespace = "com.gerardo.comandas"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.gerardo.comandas"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
