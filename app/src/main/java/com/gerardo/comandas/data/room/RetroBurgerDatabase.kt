@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executors
 
 @Database(
     entities = [Category::class, MenuItem::class, Zone::class, TableSpot::class, Order::class, OrderLine::class],
-    version = 1
+    version = 2
 )
 abstract class RetroBurgerDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -29,15 +30,22 @@ abstract class RetroBurgerDatabase : RoomDatabase() {
                     context.applicationContext,
                     RetroBurgerDatabase::class.java,
                     "retro_burger.db"
-                ).addCallback(object : Callback() {
+                ).fallbackToDestructiveMigration()
+                .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         Executors.newSingleThreadExecutor().execute {
-                            INSTANCE?.let { database ->
-                                database.zoneDao().insertAll(SeedData.zones)
-                                database.tableSpotDao().insertAll(SeedData.tableSpots)
-                                database.categoryDao().insertAll(SeedData.categories)
-                                database.menuItemDao().insertAll(SeedData.menuItems)
+                            try {
+                                INSTANCE?.let { database ->
+                                    runBlocking {
+                                        database.zoneDao().insertAll(SeedData.zones)
+                                        database.tableSpotDao().insertAll(SeedData.tableSpots)
+                                        database.categoryDao().insertAll(SeedData.categories)
+                                        database.menuItemDao().insertAll(SeedData.menuItems)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         }
                     }

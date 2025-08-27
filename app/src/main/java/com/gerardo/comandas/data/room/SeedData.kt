@@ -37,7 +37,7 @@ object SeedData {
                 else -> 0
             }
             for (number in 1..count) {
-                tables.add(TableSpot(id++, number, zone.id))
+                tables.add(TableSpot(id++, number, zone.id, isOccupied = false, isPaid = false))
             }
         }
         tables
