@@ -8,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,9 +25,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.gerardo.comandas.ui.theme.COMANDASTheme
+import com.gerardo.comandas.ui.theme.RetroBurgerTheme
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.TextField
+import com.gerardo.comandas.ui.components.PrimaryButton
+import com.gerardo.comandas.ui.components.OutlinedField
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.Offset
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            COMANDASTheme {
+            RetroBurgerTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "main_screen") {
                     composable("main_screen") { MainScreen(navController = navController) }
@@ -157,14 +157,14 @@ fun PantallaConRibetes(navController: NavController, content: @Composable () -> 
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
-            Button(
+            PrimaryButton(
                 onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB0BEC5)),
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = "Atrás", color = Color.Black)
             }
-            Button(
+            PrimaryButton(
                 onClick = { navController.navigate("main_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB0BEC5)),
                 modifier = Modifier.padding(8.dp)
@@ -195,7 +195,7 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(
+            OutlinedField(
                 value = code.value,
                 onValueChange = { input ->
                     if (input.length <= 3 && input.all { it.isDigit() }) {
@@ -212,7 +212,7 @@ fun LoginScreen(navController: NavController) {
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp)
             )
-            Button(
+            PrimaryButton(
                 onClick = {
                     validateCodeAndNavigate(code.value, users, message, navController)
                 },
@@ -243,21 +243,21 @@ fun ZonasScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_bar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_principal") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -297,21 +297,21 @@ fun NextScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_bar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_principal") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -336,14 +336,14 @@ fun BarraScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_comer_aqui") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comer aquí", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_para_llevar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -369,7 +369,7 @@ fun BarraComerAquiScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..10) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("barra_comer_aqui_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(4.dp)
@@ -480,7 +480,7 @@ fun ComedorBarScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..8) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("comedor_bar_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
@@ -527,7 +527,7 @@ fun ComedorPrincipalScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..12) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("comedor_principal_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
@@ -566,14 +566,14 @@ fun ComidaYBebidaButtons(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
-        Button(
+        PrimaryButton(
             onClick = { navController.navigate("comida_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC107)),
             modifier = Modifier.padding(8.dp)
         ) {
             Text(text = "Comida", color = Color.Black)
         }
-        Button(
+        PrimaryButton(
             onClick = { navController.navigate("bebida_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
             modifier = Modifier.padding(8.dp)
@@ -630,7 +630,7 @@ fun BebidaScreen(navController: NavController, showButtons: Boolean = true) {
                 )
                 for ((nombre, descripcion) in bebidas) {
                     if (showButtons) {
-                        Button(
+                        PrimaryButton(
                             onClick = { navController.navigate("detalle_bebida_screen/$nombre/$descripcion") },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
                             modifier = Modifier.padding(8.dp)
