@@ -22,8 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gerardo.comandas.ui.theme.RetroBurgerTheme
 import androidx.compose.foundation.text.BasicTextField
@@ -43,6 +41,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gerardo.comandas.ui.AuthViewModel
+import com.gerardo.comandas.navigation.AppNavHost
+import com.gerardo.comandas.navigation.AppRoutes
 
 
 class MainActivity : ComponentActivity() {
@@ -52,49 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RetroBurgerTheme {
                 val navController = rememberNavController()
-                val authViewModel: AuthViewModel = viewModel()
-                NavHost(navController = navController, startDestination = "main_screen") {
-                    composable("main_screen") { MainScreen(navController = navController, authViewModel = authViewModel) }
-                    composable("login_screen") { LoginScreen(navController = navController, authViewModel = authViewModel) }
-                    composable("dashboard") { ZonasScreen(navController = navController) }
-                    composable("barra_screen") { BarraScreen(navController = navController) }
-                    composable("barra_comer_aqui") { BarraComerAquiScreen(navController = navController) }
-                    composable("barra_para_llevar") { BarraParaLlevarScreen(navController = navController) }
-                    composable("comedor_bar") { ComedorBarScreen(navController = navController) }
-                    composable("comedor_principal") { ComedorPrincipalScreen(navController = navController) } // Agregada la pantalla ComedorPrincipalScreen
-                    composable("barra_comer_aqui_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            BarraComerAquiMesaScreen(navController, mesaId)
-                        }
-                    }
-                    composable("comedor_bar_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            ComedorBarMesaScreen(navController, mesaId)
-                        }
-                    }
-                    composable("comida_screen") { ComidaScreen(navController) }
-                    composable("ingredientes_screen/{nombre}/{ingredientes}") { backStackEntry ->
-                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-                        val ingredientes = backStackEntry.arguments?.getString("ingredientes") ?: ""
-                        IngredientesScreen(navController, nombre, ingredientes)
-                    }
-                    composable("bebida_screen") {
-                        BebidaScreen(navController, showButtons = false)
-                    }
-                    composable("detalle_bebida_screen/{nombre}/{descripcion}") { backStackEntry ->
-                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-                        val descripcion = backStackEntry.arguments?.getString("descripcion") ?: ""
-                        DetalleBebidaScreen(navController, nombre, descripcion)
-                    }
-                    composable("comedor_principal_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            ComedorPrincipalMesaScreen(navController, mesaId)
-                        }
-                    }
-                }
+                AppNavHost(navController = navController)
             }
         }
     }
@@ -120,8 +78,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController, auth
     val authState by authViewModel.state.collectAsState()
     LaunchedEffect(authState.role) {
         if (authState.role != null) {
-            navController.navigate("dashboard") {
-                popUpTo("main_screen") { inclusive = true }
+            navController.navigate(AppRoutes.DASHBOARD) {
+                popUpTo(AppRoutes.MAIN_SCREEN) { inclusive = true }
             }
         }
     }
@@ -142,7 +100,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController, auth
                     .size(220.dp)
                     .padding(16.dp)
                     .clickable {
-                        navController.navigate("login_screen")
+                        navController.navigate(AppRoutes.LOGIN_SCREEN)
                     },
                 contentScale = ContentScale.Fit
             )
@@ -178,7 +136,7 @@ fun PantallaConRibetes(navController: NavController, content: @Composable () -> 
                 Text(text = "Atrás", color = Color.Black)
             }
             PrimaryButton(
-                onClick = { navController.navigate("main_screen") },
+                onClick = { navController.navigate(AppRoutes.MAIN_SCREEN) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB0BEC5)),
                 modifier = Modifier.padding(8.dp)
             ) {
@@ -204,8 +162,8 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
         val authState by authViewModel.state.collectAsState()
         LaunchedEffect(authState.role) {
             if (authState.role != null) {
-                navController.navigate("dashboard") {
-                    popUpTo("login_screen") { inclusive = true }
+                navController.navigate(AppRoutes.DASHBOARD) {
+                    popUpTo(AppRoutes.LOGIN_SCREEN) { inclusive = true }
                 }
             }
         }
@@ -265,21 +223,21 @@ fun ZonasScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 PrimaryButton(
-                    onClick = { navController.navigate("barra_screen") },
+                    onClick = { navController.navigate(AppRoutes.BARRA_SCREEN) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
                 PrimaryButton(
-                    onClick = { navController.navigate("comedor_bar") },
+                    onClick = { navController.navigate(AppRoutes.COMEDOR_BAR) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
                 PrimaryButton(
-                    onClick = { navController.navigate("comedor_principal") },
+                    onClick = { navController.navigate(AppRoutes.COMEDOR_PRINCIPAL) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -319,21 +277,21 @@ fun NextScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 PrimaryButton(
-                    onClick = { navController.navigate("barra_screen") },
+                    onClick = { navController.navigate(AppRoutes.BARRA_SCREEN) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
                 PrimaryButton(
-                    onClick = { navController.navigate("comedor_bar") },
+                    onClick = { navController.navigate(AppRoutes.COMEDOR_BAR) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
                 PrimaryButton(
-                    onClick = { navController.navigate("comedor_principal") },
+                    onClick = { navController.navigate(AppRoutes.COMEDOR_PRINCIPAL) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -358,14 +316,14 @@ fun BarraScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 PrimaryButton(
-                    onClick = { navController.navigate("barra_comer_aqui") },
+                    onClick = { navController.navigate(AppRoutes.BARRA_COMER_AQUI) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comer aquí", color = Color.Black)
                 }
                 PrimaryButton(
-                    onClick = { navController.navigate("barra_para_llevar") },
+                    onClick = { navController.navigate(AppRoutes.BARRA_PARA_LLEVAR) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -391,7 +349,7 @@ fun BarraComerAquiScreen(navController: NavController) {
             ) {
                 for (i in 1..10) {
                     PrimaryButton(
-                        onClick = { navController.navigate("barra_comer_aqui_mesa_$i") },
+                        onClick = { navController.navigate(AppRoutes.navegarAMesaBarra(i)) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(4.dp)
                     ) {
@@ -446,7 +404,7 @@ fun ComidaScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .clickable { navController.navigate("ingredientes_screen/$nombre/$ingredientes") },
+                            .clickable { navController.navigate(AppRoutes.navegarAIngredientes(nombre, ingredientes)) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -502,7 +460,7 @@ fun ComedorBarScreen(navController: NavController) {
             ) {
                 for (i in 1..8) {
                     PrimaryButton(
-                        onClick = { navController.navigate("comedor_bar_mesa_$i") },
+                        onClick = { navController.navigate(AppRoutes.navegarAMesaComedorBar(i)) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
                     ) {
@@ -549,7 +507,7 @@ fun ComedorPrincipalScreen(navController: NavController) {
             ) {
                 for (i in 1..12) {
                     PrimaryButton(
-                        onClick = { navController.navigate("comedor_principal_mesa_$i") },
+                        onClick = { navController.navigate(AppRoutes.navegarAMesaComedorPrincipal(i)) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
                     ) {
@@ -588,14 +546,14 @@ fun ComidaYBebidaButtons(navController: NavController) {
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
         PrimaryButton(
-            onClick = { navController.navigate("comida_screen") },
+            onClick = { navController.navigate(AppRoutes.COMIDA_SCREEN) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC107)),
             modifier = Modifier.padding(8.dp)
         ) {
             Text(text = "Comida", color = Color.Black)
         }
         PrimaryButton(
-            onClick = { navController.navigate("bebida_screen") },
+            onClick = { navController.navigate(AppRoutes.BEBIDA_SCREEN) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
             modifier = Modifier.padding(8.dp)
         ) {
@@ -603,8 +561,6 @@ fun ComidaYBebidaButtons(navController: NavController) {
         }
     }
 }
-
-// Reemplazar AnimatedNavHost y accompanist.navigation.animation.composable por NavHost y androidx.navigation.compose.composable
 
 @Composable
 fun BarraParaLlevarScreen(navController: NavController) {
@@ -652,7 +608,7 @@ fun BebidaScreen(navController: NavController, showButtons: Boolean = true) {
                 for ((nombre, descripcion) in bebidas) {
                     if (showButtons) {
                         PrimaryButton(
-                            onClick = { navController.navigate("detalle_bebida_screen/$nombre/$descripcion") },
+                            onClick = { navController.navigate(AppRoutes.navegarADetalleBebida(nombre, descripcion)) },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
                             modifier = Modifier.padding(8.dp)
                         ) {

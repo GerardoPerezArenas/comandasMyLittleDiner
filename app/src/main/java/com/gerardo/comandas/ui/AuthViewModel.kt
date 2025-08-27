@@ -43,3 +43,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
+
+data class AuthState(
+    val role: String? = null
+)
