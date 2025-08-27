@@ -8,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,12 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.gerardo.comandas.ui.theme.COMANDASTheme
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.TextField
+import com.gerardo.comandas.ui.components.PrimaryButton
+import com.gerardo.comandas.ui.components.OutlinedField
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.Offset
@@ -39,6 +35,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gerardo.comandas.ui.AuthViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -46,50 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            COMANDASTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "main_screen") {
-                    composable("main_screen") { MainScreen(navController = navController) }
-                    composable("login_screen") { LoginScreen(navController = navController) }
-                    composable("zonas_screen") { ZonasScreen(navController = navController) }
-                    composable("barra_screen") { BarraScreen(navController = navController) }
-                    composable("barra_comer_aqui") { BarraComerAquiScreen(navController = navController) }
-                    composable("barra_para_llevar") { BarraParaLlevarScreen(navController = navController) }
-                    composable("comedor_bar") { ComedorBarScreen(navController = navController) }
-                    composable("comedor_principal") { ComedorPrincipalScreen(navController = navController) } // Agregada la pantalla ComedorPrincipalScreen
-                    composable("barra_comer_aqui_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            BarraComerAquiMesaScreen(navController, mesaId)
-                        }
-                    }
-                    composable("comedor_bar_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            ComedorBarMesaScreen(navController, mesaId)
-                        }
-                    }
-                    composable("comida_screen") { ComidaScreen(navController) }
-                    composable("ingredientes_screen/{nombre}/{ingredientes}") { backStackEntry ->
-                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-                        val ingredientes = backStackEntry.arguments?.getString("ingredientes") ?: ""
-                        IngredientesScreen(navController, nombre, ingredientes)
-                    }
-                    composable("bebida_screen") {
-                        BebidaScreen(navController, showButtons = false)
-                    }
-                    composable("detalle_bebida_screen/{nombre}/{descripcion}") { backStackEntry ->
-                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
-                        val descripcion = backStackEntry.arguments?.getString("descripcion") ?: ""
-                        DetalleBebidaScreen(navController, nombre, descripcion)
-                    }
-                    composable("comedor_principal_mesa_{mesaId}") { backStackEntry ->
-                        val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull()
-                        if (mesaId != null) {
-                            ComedorPrincipalMesaScreen(navController, mesaId)
-                        }
-                    }
-                }
+
             }
         }
     }
@@ -111,7 +68,15 @@ fun RibeteCuadriculado(modifier: Modifier = Modifier, squares: Int = 20) {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
+    val authState by authViewModel.state.collectAsState()
+    LaunchedEffect(authState.role) {
+        if (authState.role != null) {
+            navController.navigate("dashboard") {
+                popUpTo("main_screen") { inclusive = true }
+            }
+        }
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -157,14 +122,14 @@ fun PantallaConRibetes(navController: NavController, content: @Composable () -> 
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
-            Button(
+            PrimaryButton(
                 onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB0BEC5)),
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = "Atrás", color = Color.Black)
             }
-            Button(
+            PrimaryButton(
                 onClick = { navController.navigate("main_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB0BEC5)),
                 modifier = Modifier.padding(8.dp)
@@ -178,16 +143,24 @@ fun PantallaConRibetes(navController: NavController, content: @Composable () -> 
 
 // Mejorar TextField y Button en LoginScreen
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     PantallaConRibetes(navController = navController) {
         val code = remember { mutableStateOf("") }
         val message = remember { mutableStateOf("") }
         val users = mapOf(
-            "111" to "Admin",
+            "171" to "Admin",
             "222" to "Javi",
             "333" to "Maria",
             "444" to "Ander"
         )
+        val authState by authViewModel.state.collectAsState()
+        LaunchedEffect(authState.role) {
+            if (authState.role != null) {
+                navController.navigate("dashboard") {
+                    popUpTo("login_screen") { inclusive = true }
+                }
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -195,7 +168,7 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(
+            OutlinedField(
                 value = code.value,
                 onValueChange = { input ->
                     if (input.length <= 3 && input.all { it.isDigit() }) {
@@ -205,16 +178,16 @@ fun LoginScreen(navController: NavController) {
                 placeholder = { Text("Ingrese número", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 keyboardActions = KeyboardActions(onDone = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    validateCode(code.value, users, message, authViewModel)
                 }),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp)
             )
-            Button(
+            PrimaryButton(
                 onClick = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    validateCode(code.value, users, message, authViewModel)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                 modifier = Modifier
@@ -243,21 +216,21 @@ fun ZonasScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_bar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_principal") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -269,16 +242,16 @@ fun ZonasScreen(navController: NavController) {
     }
 }
 
-private fun validateCodeAndNavigate(
+private fun validateCode(
     code: String,
     users: Map<String, String>,
     message: MutableState<String>,
-    navController: NavController
+    authViewModel: AuthViewModel
 ) {
     val user = users[code]
     if (user != null) {
         message.value = "Bienvenido, $user"
-        navController.navigate("zonas_screen")
+        authViewModel.login(code)
     } else {
         message.value = "Código incorrecto"
     }
@@ -297,21 +270,21 @@ fun NextScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_screen") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Barra", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_bar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comedor Bar", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("comedor_principal") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -336,14 +309,14 @@ fun BarraScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_comer_aqui") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comer aquí", color = Color.Black)
                 }
-                Button(
+                PrimaryButton(
                     onClick = { navController.navigate("barra_para_llevar") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
@@ -369,7 +342,7 @@ fun BarraComerAquiScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..10) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("barra_comer_aqui_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(4.dp)
@@ -480,7 +453,7 @@ fun ComedorBarScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..8) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("comedor_bar_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
@@ -527,7 +500,7 @@ fun ComedorPrincipalScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 1..12) {
-                    Button(
+                    PrimaryButton(
                         onClick = { navController.navigate("comedor_principal_mesa_$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
@@ -566,14 +539,14 @@ fun ComidaYBebidaButtons(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth().padding(16.dp)
     ) {
-        Button(
+        PrimaryButton(
             onClick = { navController.navigate("comida_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC107)),
             modifier = Modifier.padding(8.dp)
         ) {
             Text(text = "Comida", color = Color.Black)
         }
-        Button(
+        PrimaryButton(
             onClick = { navController.navigate("bebida_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
             modifier = Modifier.padding(8.dp)
@@ -630,7 +603,7 @@ fun BebidaScreen(navController: NavController, showButtons: Boolean = true) {
                 )
                 for ((nombre, descripcion) in bebidas) {
                     if (showButtons) {
-                        Button(
+                        PrimaryButton(
                             onClick = { navController.navigate("detalle_bebida_screen/$nombre/$descripcion") },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
                             modifier = Modifier.padding(8.dp)
