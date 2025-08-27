@@ -28,7 +28,7 @@ fun ComedorPrincipalScreen(navController: NavController) {
             ) {
                 for (i in 1..12) {
                     Button(
-                        onClick = { navController.navigate("comedor_principal_mesa_$i") },
+                        onClick = { navController.navigate("comida_y_bebida_screen?mesaId=$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(8.dp)
                     ) {

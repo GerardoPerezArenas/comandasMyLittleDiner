@@ -1,10 +1,9 @@
 package com.gerardo.comandas.domain.usecases
 
-import com.gerardo.comandas.data.repositories.TableRepository
+import com.gerardo.comandas.data.repository.TableRepository
 
 class MarkTableAsPaid(private val tableRepository: TableRepository) {
-    operator fun invoke(tableId: Int) {
-        tableRepository.markAsPaid(tableId)
+    suspend operator fun invoke(tableId: Int) {
+        tableRepository.changeTableState(tableId, "PAID")
     }
 }
-

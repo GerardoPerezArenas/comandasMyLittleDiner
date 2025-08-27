@@ -7,23 +7,23 @@ object SeedData {
     )
 
     val menuItems = listOf(
-        MenuItem(1, "MARILYN", 0.0, 1),
-        MenuItem(2, "ELVIS", 0.0, 1),
-        MenuItem(3, "PATTY MELT", 0.0, 1),
-        MenuItem(4, "STEVE MCQUEEN", 0.0, 1),
-        MenuItem(5, "GIVE ME MORE (NOSOLOBURGER)", 0.0, 1),
-        MenuItem(6, "POLLO CRUJIENTE", 0.0, 1),
-        MenuItem(7, "BACON CHESSE FRIES", 0.0, 1),
-        MenuItem(8, "NACHOS", 0.0, 1),
-        MenuItem(9, "ALITAS BUFFALO WINGS", 0.0, 1),
-        MenuItem(10, "COLA", 0.0, 2),
-        MenuItem(11, "AGUA", 0.0, 2)
+        MenuItem(1, 1, "MARILYN", 950, null, false, true, "Hamburguesa clásica"),
+        MenuItem(2, 1, "ELVIS", 1050, null, false, true, "Hamburguesa con bacon y queso"),
+        MenuItem(3, 1, "PATTY MELT", 1100, null, false, true, "Hamburguesa con pan de molde"),
+        MenuItem(4, 1, "STEVE MCQUEEN", 1200, null, false, true, "Hamburguesa especial de la casa"),
+        MenuItem(5, 1, "GIVE ME MORE (NOSOLOBURGER)", 1300, null, false, true, "Hamburguesa doble carne"),
+        MenuItem(6, 1, "POLLO CRUJIENTE", 900, null, false, true, "Pollo empanado crujiente"),
+        MenuItem(7, 1, "BACON CHESSE FRIES", 700, null, false, true, "Patatas con bacon y queso"),
+        MenuItem(8, 1, "NACHOS", 800, null, false, true, "Nachos con queso y jalapeños"),
+        MenuItem(9, 1, "ALITAS BUFFALO WINGS", 850, null, false, true, "Alitas de pollo picantes"),
+        MenuItem(10, 2, "COLA", 250, null, true, true, "Refresco de cola"),
+        MenuItem(11, 2, "AGUA", 200, null, true, true, "Agua mineral")
     )
 
     val zones = listOf(
-        Zone(1, "Barra"),
-        Zone(2, "Bar"),
-        Zone(3, "Comedor")
+        Zone(1, "Barra", "#FFB300"),
+        Zone(2, "Bar", "#1976D2"),
+        Zone(3, "Comedor", "#388E3C")
     )
 
     val tableSpots: List<TableSpot> = run {
@@ -37,7 +37,7 @@ object SeedData {
                 else -> 0
             }
             for (number in 1..count) {
-                tables.add(TableSpot(id++, number, zone.id))
+                tables.add(TableSpot(id++, zone.id, "Mesa $number", number, "FREE"))
             }
         }
         tables

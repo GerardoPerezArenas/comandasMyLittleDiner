@@ -4,12 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,17 +21,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import com.gerardo.comandas.ui.AuthViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     PantallaConRibetes(navController = navController) {
         val code = remember { mutableStateOf("") }
         val message = remember { mutableStateOf("") }
         val users = mapOf(
-            "111" to "Admin",
-            "222" to "Javi",
-            "333" to "Maria",
-            "444" to "Ander"
+            "117" to "Ruben",
+            "126" to "Javi",
+            "108" to "Evelyn"
         )
         Column(
             modifier = Modifier
@@ -47,45 +51,64 @@ fun LoginScreen(navController: NavController) {
                         code.value = input
                     }
                 },
-                placeholder = { Text("Ingrese número", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)) },
+                placeholder = {
+                    Text(
+                        "Identifícate",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                    )
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 keyboardActions = KeyboardActions(onDone = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    onLogin(code.value, message, navController, authViewModel, users)
                 }),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp)
             )
-            Button(
+            androidx.compose.material3.Button(
                 onClick = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    onLogin(code.value, message, navController, authViewModel, users)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
-                Text("Ingresar", color = Color.White)
+                Text(
+                    text = "Ingresar",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White
+                )
             }
             if (message.value.isNotEmpty()) {
-                Text(message.value, color = Color.Red)
+                LaunchedEffect(message.value) {
+                    delay(5000)
+                    message.value = ""
+                }
+                Text(
+                    text = message.value,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
     }
 }
 
-private fun validateCodeAndNavigate(
+private fun onLogin(
     code: String,
-    users: Map<String, String>,
     message: MutableState<String>,
-    navController: NavController
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    users: Map<String, String>
 ) {
-    val user = users[code]
-    if (user != null) {
-        message.value = "Bienvenido, $user"
-        navController.navigate("zonas_screen")
-    } else {
-        message.value = "Código incorrecto"
+    val name = users[code]
+    if (name == null) {
+        message.value = "Identificación no válida"
+        return
     }
+    authViewModel.login(code)
+    navController.navigate("zonas_screen?name=$name")
+    message.value = ""
 }

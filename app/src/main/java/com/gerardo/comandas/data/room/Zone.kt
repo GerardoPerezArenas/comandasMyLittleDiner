@@ -6,5 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "zones")
 data class Zone(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String
+    val name: String,
+    val colorHex: String,
+    val sort: Int = 0
 )
+

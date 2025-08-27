@@ -28,7 +28,7 @@ fun BarraComerAquiScreen(navController: NavController) {
             ) {
                 for (i in 1..10) {
                     Button(
-                        onClick = { navController.navigate("barra_comer_aqui_mesa_$i") },
+                        onClick = { navController.navigate("comida_y_bebida_screen?mesaId=$i") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                         modifier = Modifier.padding(4.dp)
                     ) {

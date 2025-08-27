@@ -10,5 +10,8 @@ interface OrderLineDao {
     suspend fun getByOrder(orderId: Int): List<OrderLine>
 
     @Insert
-    suspend fun insertAll(lines: List<OrderLine>)
+    suspend fun insertAll(orderLines: List<OrderLine>)
+
+    @Query("DELETE FROM order_lines WHERE id = :id")
+    suspend fun deleteById(id: Int)
 }
