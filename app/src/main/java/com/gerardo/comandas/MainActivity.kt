@@ -39,6 +39,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gerardo.comandas.ui.AuthViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -48,10 +52,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             COMANDASTheme {
                 val navController = rememberNavController()
+                val authViewModel: AuthViewModel = viewModel()
                 NavHost(navController = navController, startDestination = "main_screen") {
-                    composable("main_screen") { MainScreen(navController = navController) }
-                    composable("login_screen") { LoginScreen(navController = navController) }
-                    composable("zonas_screen") { ZonasScreen(navController = navController) }
+                    composable("main_screen") { MainScreen(navController = navController, authViewModel = authViewModel) }
+                    composable("login_screen") { LoginScreen(navController = navController, authViewModel = authViewModel) }
+                    composable("dashboard") { ZonasScreen(navController = navController) }
                     composable("barra_screen") { BarraScreen(navController = navController) }
                     composable("barra_comer_aqui") { BarraComerAquiScreen(navController = navController) }
                     composable("barra_para_llevar") { BarraParaLlevarScreen(navController = navController) }
@@ -111,7 +116,15 @@ fun RibeteCuadriculado(modifier: Modifier = Modifier, squares: Int = 20) {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
+    val authState by authViewModel.state.collectAsState()
+    LaunchedEffect(authState.role) {
+        if (authState.role != null) {
+            navController.navigate("dashboard") {
+                popUpTo("main_screen") { inclusive = true }
+            }
+        }
+    }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -178,16 +191,24 @@ fun PantallaConRibetes(navController: NavController, content: @Composable () -> 
 
 // Mejorar TextField y Button en LoginScreen
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     PantallaConRibetes(navController = navController) {
         val code = remember { mutableStateOf("") }
         val message = remember { mutableStateOf("") }
         val users = mapOf(
-            "111" to "Admin",
+            "171" to "Admin",
             "222" to "Javi",
             "333" to "Maria",
             "444" to "Ander"
         )
+        val authState by authViewModel.state.collectAsState()
+        LaunchedEffect(authState.role) {
+            if (authState.role != null) {
+                navController.navigate("dashboard") {
+                    popUpTo("login_screen") { inclusive = true }
+                }
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -205,7 +226,7 @@ fun LoginScreen(navController: NavController) {
                 placeholder = { Text("Ingrese número", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 keyboardActions = KeyboardActions(onDone = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    validateCode(code.value, users, message, authViewModel)
                 }),
                 singleLine = true,
                 modifier = Modifier
@@ -214,7 +235,7 @@ fun LoginScreen(navController: NavController) {
             )
             Button(
                 onClick = {
-                    validateCodeAndNavigate(code.value, users, message, navController)
+                    validateCode(code.value, users, message, authViewModel)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                 modifier = Modifier
@@ -269,16 +290,16 @@ fun ZonasScreen(navController: NavController) {
     }
 }
 
-private fun validateCodeAndNavigate(
+private fun validateCode(
     code: String,
     users: Map<String, String>,
     message: MutableState<String>,
-    navController: NavController
+    authViewModel: AuthViewModel
 ) {
     val user = users[code]
     if (user != null) {
         message.value = "Bienvenido, $user"
-        navController.navigate("zonas_screen")
+        authViewModel.login(code)
     } else {
         message.value = "Código incorrecto"
     }
