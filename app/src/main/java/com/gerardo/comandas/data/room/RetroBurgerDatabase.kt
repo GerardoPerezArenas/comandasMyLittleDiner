@@ -4,12 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import java.util.concurrent.Executors
 
 @Database(
     entities = [Category::class, MenuItem::class, Zone::class, TableSpot::class, Order::class, OrderLine::class],
-    version = 1
+    version = 2
 )
 abstract class RetroBurgerDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -22,6 +23,12 @@ abstract class RetroBurgerDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: RetroBurgerDatabase? = null
+        
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE table_spots ADD COLUMN status TEXT NOT NULL DEFAULT 'FREE'")
+            }
+        }
 
         fun getInstance(context: Context): RetroBurgerDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -29,7 +36,8 @@ abstract class RetroBurgerDatabase : RoomDatabase() {
                     context.applicationContext,
                     RetroBurgerDatabase::class.java,
                     "retro_burger.db"
-                ).addCallback(object : Callback() {
+                ).addMigrations(MIGRATION_1_2)
+                .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         Executors.newSingleThreadExecutor().execute {

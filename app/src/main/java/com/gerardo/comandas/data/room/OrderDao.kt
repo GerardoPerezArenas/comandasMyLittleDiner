@@ -11,4 +11,7 @@ interface OrderDao {
 
     @Insert
     suspend fun insert(order: Order): Long
+    
+    @Query("SELECT * FROM orders WHERE id = :orderId")
+    suspend fun getById(orderId: Int): Order?
 }

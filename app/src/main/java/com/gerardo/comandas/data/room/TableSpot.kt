@@ -18,5 +18,6 @@ import androidx.room.PrimaryKey
 data class TableSpot(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val number: Int,
-    val zoneId: Int
+    val zoneId: Int,
+    val status: String = "FREE" // FREE, OCCUPIED, PAID
 )

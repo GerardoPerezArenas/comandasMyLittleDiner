@@ -11,4 +11,7 @@ interface OrderLineDao {
 
     @Insert
     suspend fun insertAll(lines: List<OrderLine>)
+    
+    @Insert
+    suspend fun insert(line: OrderLine): Long
 }
