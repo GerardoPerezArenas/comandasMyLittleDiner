@@ -15,91 +15,79 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.gerardo.comandas.data.room.RetroBurgerDatabase
+import com.gerardo.comandas.data.room.OrderLine
+import com.gerardo.comandas.ui.OrderViewModel
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.produceState
+import com.gerardo.comandas.data.room.MenuItem
 
 @Composable
-fun BebidaScreen(navController: NavController) {
+fun BebidaScreen(navController: NavController, mesaId: Int, orderId: Int?) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val db = RetroBurgerDatabase.getDatabase(context)
+    val orderViewModel: OrderViewModel = viewModel()
+    val menuItemsState = produceState<List<MenuItem>>(initialValue = emptyList(), producer = {
+        value = db.menuItemDao().getByCategory(2)
+    })
+    val menuItems = menuItemsState.value
+    var observacion by remember { mutableStateOf("") }
+    var cantidad by remember { mutableStateOf(1) }
     PantallaConRibetes(navController = navController) {
-        var bebidaSeleccionada by remember { mutableStateOf<String?>(null) }
-        var observacion by remember { mutableStateOf("") }
-        var mostrarObservacion by remember { mutableStateOf(false) }
-        val bebidas = listOf(
-            "Coca Cola" to "Refresco gaseoso",
-            "Agua Mineral" to "Agua con gas",
-            "Jugo de Naranja" to "Jugo natural de naranja",
-            "Cerveza" to "Bebida alcohólica fermentada"
-        )
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFC7F3E3)),
+            modifier = Modifier.fillMaxSize().background(Color(0xFFC7F3E3)),
             contentAlignment = Alignment.TopCenter
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Selecciona una bebida:", modifier = Modifier.padding(16.dp))
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(bebidas) { (nombre, descripcion) ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    bebidaSeleccionada = nombre
-                                    mostrarObservacion = false
-                                    observacion = ""
-                                }
-                                .background(if (bebidaSeleccionada == nombre) Color(0xFFB3E5FC) else Color.Transparent)
-                                .padding(16.dp)
+                Text(text = "Bebidas disponibles", modifier = Modifier.padding(16.dp))
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(menuItems) { menuItem ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Text(text = nombre, color = Color.Black)
-                                Text(text = descripcion, color = Color.DarkGray, modifier = Modifier.padding(start = 8.dp))
+                            Text(menuItem.name, modifier = Modifier.weight(1f))
+                            Text("${menuItem.priceCents / 100.0} €", modifier = Modifier.weight(1f))
+                            TextField(
+                                value = cantidad.toString(),
+                                onValueChange = { value -> cantidad = value.toIntOrNull() ?: 1 },
+                                label = { Text("Cantidad") },
+                                modifier = Modifier.width(80.dp)
+                            )
+                            TextField(
+                                value = observacion,
+                                onValueChange = { observacion = it },
+                                label = { Text("Nota") },
+                                modifier = Modifier.width(120.dp)
+                            )
+                            Button(onClick = {
+                                if (orderId != null) {
+                                    orderViewModel.addOrderLine(
+                                        OrderLine(
+                                            orderId = orderId,
+                                            itemId = menuItem.id,
+                                            qty = cantidad,
+                                            note = observacion,
+                                            unitPriceCents = menuItem.priceCents,
+                                            totalCents = menuItem.priceCents * cantidad
+                                        )
+                                    )
+                                }
+                            }) {
+                                Text("Añadir")
                             }
                         }
                     }
                 }
-                if (bebidaSeleccionada != null) {
-                    Button(
-                        onClick = { mostrarObservacion = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(text = "Observaciones", color = Color.White)
-                    }
-                }
-                if (mostrarObservacion && bebidaSeleccionada != null) {
-                    TextField(
-                        value = observacion,
-                        onValueChange = { observacion = it },
-                        label = { Text("Escribe observaciones para ${bebidaSeleccionada}") },
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .padding(16.dp)
-                    )
-                    if (observacion.isNotBlank()) {
-                        Text(
-                            text = "Observación: $observacion",
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        Button(
-                            onClick = {
-                                // Aquí se enviaría la bebida y la observación a la impresora
-                                // Por ahora solo se limpia el estado para simular el envío
-                                bebidaSeleccionada = null
-                                observacion = ""
-                                mostrarObservacion = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            Text(text = "Enviar a impresora", color = Color.White)
-                        }
-                    }
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = {
+                    // Aquí iría la lógica para enviar a impresora y actualizar estado
+                }) {
+                    Text("Enviar a impresora")
                 }
             }
         }

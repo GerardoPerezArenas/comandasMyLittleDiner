@@ -33,8 +33,21 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             val mesaId = backStackEntry.arguments?.getString("mesaId")!!.toInt()
             ComedorPrincipalMesaScreen(navController = navController, mesaId = mesaId)
         }
-        composable("comida_screen") { ComidaScreen(navController = navController) }
-        composable("bebida_screen") { BebidaScreen(navController = navController) }
+        composable("comida_y_bebida_screen?mesaId={mesaId}&orderId={orderId}") { backStackEntry ->
+            val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull() ?: 0
+            val orderId = backStackEntry.arguments?.getString("orderId")?.toIntOrNull()
+            ComidaYBebidaScreen(navController = navController, mesaId = mesaId, orderId = orderId)
+        }
+        composable("comida_screen?mesaId={mesaId}&orderId={orderId}") { backStackEntry ->
+            val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull() ?: 0
+            val orderId = backStackEntry.arguments?.getString("orderId")?.toIntOrNull()
+            ComidaScreen(navController = navController, mesaId = mesaId, orderId = orderId)
+        }
+        composable("bebida_screen?mesaId={mesaId}&orderId={orderId}") { backStackEntry ->
+            val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull() ?: 0
+            val orderId = backStackEntry.arguments?.getString("orderId")?.toIntOrNull()
+            BebidaScreen(navController = navController, mesaId = mesaId, orderId = orderId)
+        }
         composable("detalle_bebida_screen/{nombre}/{descripcion}") { backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
             val descripcion = backStackEntry.arguments?.getString("descripcion") ?: ""
@@ -44,10 +57,6 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
             val ingredientes = backStackEntry.arguments?.getString("ingredientes") ?: ""
             IngredientesScreen(navController = navController, nombre = nombre, ingredientes = ingredientes)
-        }
-        composable("comida_y_bebida_screen?mesaId={mesaId}") { backStackEntry ->
-            val mesaId = backStackEntry.arguments?.getString("mesaId")?.toIntOrNull() ?: 0
-            ComidaYBebidaScreen(navController = navController, mesaId = mesaId)
         }
         composable("testOrder") {
             val context = androidx.compose.ui.platform.LocalContext.current

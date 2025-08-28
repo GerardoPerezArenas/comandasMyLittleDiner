@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import com.gerardo.comandas.ui.components.PantallaConRibetes
 
 @Composable
-fun ComidaYBebidaScreen(navController: NavController, mesaId: Int) {
+fun ComidaYBebidaScreen(navController: NavController, mesaId: Int, orderId: Int?) {
     PantallaConRibetes(navController = navController) {
         Box(
             modifier = Modifier
@@ -32,14 +32,14 @@ fun ComidaYBebidaScreen(navController: NavController, mesaId: Int) {
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
                 Button(
-                    onClick = { navController.navigate("comida_screen?mesaId=$mesaId") },
+                    onClick = { navController.navigate("comida_screen?mesaId=$mesaId&orderId=$orderId") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFCE9D6)),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(text = "Comida", color = Color.Black)
                 }
                 Button(
-                    onClick = { navController.navigate("bebida_screen?mesaId=$mesaId") },
+                    onClick = { navController.navigate("bebida_screen?mesaId=$mesaId&orderId=$orderId") },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7F9F)),
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -49,4 +49,3 @@ fun ComidaYBebidaScreen(navController: NavController, mesaId: Int) {
         }
     }
 }
-

@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import com.gerardo.comandas.ui.OrderViewModel
 import com.gerardo.comandas.data.repository.OrderRepositoryImpl
 import com.gerardo.comandas.data.repository.TableRepositoryImpl
 import com.gerardo.comandas.data.room.RetroBurgerDatabase
+import kotlinx.coroutines.launch
 
 @Composable
 fun ComedorPrincipalScreen(navController: NavController) {
@@ -27,7 +29,6 @@ fun ComedorPrincipalScreen(navController: NavController) {
     val db = RetroBurgerDatabase.getDatabase(context)
     val tableRepository = TableRepositoryImpl(db.zoneDao(), db.tableSpotDao())
     val orderRepository = OrderRepositoryImpl(db.orderDao(), db.orderLineDao())
-
     val tableViewModel: TableViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
@@ -41,9 +42,9 @@ fun ComedorPrincipalScreen(navController: NavController) {
         }
     })
     val tablesState = tableViewModel.tables.collectAsState()
+    val scope = rememberCoroutineScope()
 
     PantallaConRibetes(navController = navController) {
-        // Zona 3 = Comedor Principal
         LaunchedEffect(Unit) {
             tableViewModel.loadTables(3)
         }
@@ -63,9 +64,12 @@ fun ComedorPrincipalScreen(navController: NavController) {
                     Button(
                         onClick = {
                             if (mesa.state == "FREE") {
-                                tableViewModel.changeTableState(mesa.id, "OCCUPIED")
-                                orderViewModel.createOrderForTable(mesa.id)
-                                navController.navigate("comida_y_bebida_screen?mesaId=${mesa.id}")
+                                scope.launch {
+                                    tableViewModel.changeTableState(mesa.id, "OCCUPIED")
+                                    val order = com.gerardo.comandas.data.room.Order(tableSpotId = mesa.id, createdAt = System.currentTimeMillis())
+                                    val orderId = orderViewModel.createOrder(order)
+                                    navController.navigate("comida_y_bebida_screen?mesaId=${mesa.id}&orderId=${orderId}")
+                                }
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = color),
