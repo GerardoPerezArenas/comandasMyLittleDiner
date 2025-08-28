@@ -15,15 +15,13 @@ import androidx.navigation.NavController
 import com.gerardo.comandas.ui.components.PantallaConRibetes
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gerardo.comandas.ui.TableViewModel
-import com.gerardo.comandas.data.repository.TableRepositoryImpl
-import com.gerardo.comandas.data.room.RetroBurgerDatabase
+import com.gerardo.comandas.di.AppModule
 import androidx.compose.runtime.collectAsState
 
 @Composable
 fun BarraScreen(navController: NavController) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val db = RetroBurgerDatabase.getDatabase(context)
-    val tableRepository = TableRepositoryImpl(db.zoneDao(), db.tableSpotDao())
+    val tableRepository = AppModule.provideTableRepository(context)
     val tableViewModel: TableViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")

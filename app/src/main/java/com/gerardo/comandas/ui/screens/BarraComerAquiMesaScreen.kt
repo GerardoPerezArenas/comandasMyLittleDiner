@@ -14,7 +14,7 @@ import com.gerardo.comandas.ui.components.PantallaConRibetes
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gerardo.comandas.ui.TableViewModel
 import com.gerardo.comandas.ui.OrderViewModel
-import com.gerardo.comandas.data.repository.TableRepositoryImpl
+import com.gerardo.comandas.di.AppModule
 import com.gerardo.comandas.data.repository.OrderRepositoryImpl
 import com.gerardo.comandas.data.room.RetroBurgerDatabase
 import com.gerardo.comandas.data.room.Order
@@ -28,7 +28,7 @@ import androidx.compose.material3.Button
 fun BarraComerAquiMesaScreen(navController: NavController, mesaId: Int) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val db = RetroBurgerDatabase.getDatabase(context)
-    val tableRepository = TableRepositoryImpl(db.zoneDao(), db.tableSpotDao())
+    val tableRepository = AppModule.provideTableRepository(context)
     val orderRepository = OrderRepositoryImpl(db.orderDao(), db.orderLineDao())
     val tableViewModel: TableViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
