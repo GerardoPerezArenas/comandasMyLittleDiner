@@ -16,6 +16,9 @@ class TableViewModel(private val tableRepository: TableRepository) : ViewModel()
     private val _tables = MutableStateFlow<List<TableSpot>>(emptyList())
     val tables: StateFlow<List<TableSpot>> = _tables
 
+    // Guardamos la zona actual para recargar después de cambiar el estado
+    private var currentZoneId: Int? = null
+
     fun loadZones() {
         viewModelScope.launch {
             _zones.value = tableRepository.getZones()
@@ -23,6 +26,7 @@ class TableViewModel(private val tableRepository: TableRepository) : ViewModel()
     }
 
     fun loadTables(zoneId: Int) {
+        currentZoneId = zoneId
         viewModelScope.launch {
             _tables.value = tableRepository.getTablesByZone(zoneId)
         }
@@ -31,7 +35,10 @@ class TableViewModel(private val tableRepository: TableRepository) : ViewModel()
     fun changeTableState(tableId: Int, state: String) {
         viewModelScope.launch {
             tableRepository.changeTableState(tableId, state)
-            // Recargar mesas si es necesario
+            // Recarga las mesas de la zona actual para reflejar el nuevo estado
+            currentZoneId?.let {
+                _tables.value = tableRepository.getTablesByZone(it)
+            }
         }
     }
 }

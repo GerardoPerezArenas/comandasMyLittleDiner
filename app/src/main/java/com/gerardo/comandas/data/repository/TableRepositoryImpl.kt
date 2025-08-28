@@ -12,6 +12,11 @@ class TableRepositoryImpl(
     override suspend fun getZones() = zoneDao.getAll()
     override suspend fun getTablesByZone(zoneId: Int) = tableSpotDao.getByZone(zoneId)
     override suspend fun updateTable(table: TableSpot) = tableSpotDao.insertAll(listOf(table))
-    override suspend fun changeTableState(tableId: Int, state: String) { /* Implementar cambio de estado */ }
+
+    // Implementación añadida para actualizar el estado de la mesa
+    override suspend fun changeTableState(tableId: Int, state: String) {
+        tableSpotDao.updateState(tableId, state)
+    }
 }
+
 

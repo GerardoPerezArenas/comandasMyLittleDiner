@@ -10,6 +10,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class OrderViewModel(private val orderRepository: OrderRepository) : ViewModel() {
+    // Almacena el ID del pedido creado para la mesa
+    private val _currentOrderId = MutableStateFlow<Long?>(null)
+    val currentOrderId: StateFlow<Long?> = _currentOrderId
+
+    /**
+     * Crea un nuevo pedido para la mesa indicada y guarda su ID.
+     */
+    fun createOrderForTable(tableId: Int) {
+        viewModelScope.launch {
+            val order = Order(
+                tableSpotId = tableId,
+                createdAt = System.currentTimeMillis()
+            )
+            val id = orderRepository.createOrder(order)
+            _currentOrderId.value = id
+        }
+    }
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
     val orders: StateFlow<List<Order>> = _orders
 

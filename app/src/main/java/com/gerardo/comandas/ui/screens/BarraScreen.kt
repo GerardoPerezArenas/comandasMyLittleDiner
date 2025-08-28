@@ -13,28 +13,39 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gerardo.comandas.ui.TableViewModel
+import com.gerardo.comandas.data.repository.OrderRepositoryImpl
 import com.gerardo.comandas.data.repository.TableRepositoryImpl
 import com.gerardo.comandas.data.room.RetroBurgerDatabase
-import androidx.compose.runtime.collectAsState
+import com.gerardo.comandas.ui.OrderViewModel
 
 @Composable
 fun BarraScreen(navController: NavController) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val db = RetroBurgerDatabase.getDatabase(context)
     val tableRepository = TableRepositoryImpl(db.zoneDao(), db.tableSpotDao())
+    val orderRepository = OrderRepositoryImpl(db.orderDao(), db.orderLineDao())
+
     val tableViewModel: TableViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return TableViewModel(tableRepository) as T
         }
     })
+    val orderViewModel: OrderViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return OrderViewModel(orderRepository) as T
+        }
+    })
     val tablesState = tableViewModel.tables.collectAsState()
 
     PantallaConRibetes(navController = navController) {
+        // Cargar las mesas de la zona 1 (Barra) al entrar
         LaunchedEffect(Unit) {
-            tableViewModel.loadTables(1) // Zona 1: Barra
+            tableViewModel.loadTables(1)
         }
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -47,13 +58,17 @@ fun BarraScreen(navController: NavController) {
                 tablesState.value.forEach { mesa ->
                     val color = when (mesa.state) {
                         "FREE" -> Color(0xFF4CAF50) // Verde
-                        else -> Color(0xFFD32F2F) // Rojo
+                        else -> Color(0xFFD32F2F)   // Rojo
                     }
                     Button(
                         onClick = {
                             if (mesa.state == "FREE") {
+                                // Cambiar el estado de la mesa a OCCUPIED
                                 tableViewModel.changeTableState(mesa.id, "OCCUPIED")
-                                // Aquí podrías navegar a la pantalla de pedido y crear el pedido
+                                // Crear un pedido para la mesa y guardar su id en OrderViewModel
+                                orderViewModel.createOrderForTable(mesa.id)
+                                // Navegar a la pantalla de selección de comida/bebida
+                                navController.navigate("comida_y_bebida_screen?mesaId=${mesa.id}")
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = color),

@@ -14,8 +14,8 @@ import com.gerardo.comandas.ui.components.PantallaConRibetes
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gerardo.comandas.ui.TableViewModel
 import com.gerardo.comandas.ui.OrderViewModel
-import com.gerardo.comandas.data.repository.TableRepositoryImpl
 import com.gerardo.comandas.data.repository.OrderRepositoryImpl
+import com.gerardo.comandas.data.repository.TableRepositoryImpl
 import com.gerardo.comandas.data.room.RetroBurgerDatabase
 import com.gerardo.comandas.data.room.Order
 import com.gerardo.comandas.data.room.OrderLine
