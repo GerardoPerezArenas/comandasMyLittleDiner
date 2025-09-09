@@ -19,6 +19,7 @@ import com.gerardo.comandas.data.room.RetroBurgerDatabase
 import com.gerardo.comandas.data.room.OrderLine
 import com.gerardo.comandas.ui.OrderViewModel
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import com.gerardo.comandas.ui.components.VoiceInputTextField
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.produceState
 import com.gerardo.comandas.data.room.MenuItem
@@ -58,7 +59,7 @@ fun BebidaScreen(navController: NavController, mesaId: Int, orderId: Int?) {
                                 label = { Text("Cantidad") },
                                 modifier = Modifier.width(80.dp)
                             )
-                            TextField(
+                            VoiceInputTextField(
                                 value = observacion,
                                 onValueChange = { observacion = it },
                                 label = { Text("Nota") },
