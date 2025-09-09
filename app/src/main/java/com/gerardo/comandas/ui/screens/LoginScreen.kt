@@ -7,7 +7,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import com.gerardo.comandas.ui.components.VoiceInputTextField
 import com.gerardo.comandas.ui.AuthViewModel
 import kotlinx.coroutines.delay
 
@@ -44,7 +44,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextField(
+            VoiceInputTextField(
                 value = code.value,
                 onValueChange = { input ->
                     if (input.length <= 3 && input.all { it.isDigit() }) {
@@ -62,6 +62,7 @@ fun LoginScreen(
                     onLogin(code.value, message, navController, authViewModel, users)
                 }),
                 singleLine = true,
+                convertSpokenNumbersToDigits = true,
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp)

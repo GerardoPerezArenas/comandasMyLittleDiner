@@ -20,6 +20,7 @@ import com.gerardo.comandas.data.room.OrderLine
 import com.gerardo.comandas.data.room.RetroBurgerDatabase
 import com.gerardo.comandas.ui.OrderViewModel
 import com.gerardo.comandas.ui.components.PantallaConRibetes
+import com.gerardo.comandas.ui.components.VoiceInputTextField
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.produceState
 import androidx.compose.foundation.lazy.LazyColumn
@@ -69,7 +70,7 @@ fun ComidaScreen(navController: NavController, mesaId: Int, orderId: Int?) {
                                 label = { Text("Cantidad") },
                                 modifier = Modifier.width(80.dp)
                             )
-                            TextField(
+                            VoiceInputTextField(
                                 value = observacion,
                                 onValueChange = { observacion = it },
                                 label = { Text("Nota") },
