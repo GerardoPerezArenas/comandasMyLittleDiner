@@ -30,7 +30,8 @@ fun VoiceInputTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = false,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    convertSpokenNumbersToDigits: Boolean = false
 ) {
     val context = LocalContext.current
     var isListening by remember { mutableStateOf(false) }
@@ -50,7 +51,12 @@ fun VoiceInputTextField(
         SpeechToTextHelper(
             context = context,
             onResult = { result ->
-                onValueChange(result)
+                val processedResult = if (convertSpokenNumbersToDigits) {
+                    convertSpanishNumbersToDigits(result)
+                } else {
+                    result
+                }
+                onValueChange(processedResult)
                 errorMessage = ""
             },
             onError = { error ->
@@ -122,5 +128,27 @@ fun VoiceInputTextField(
             kotlinx.coroutines.delay(3000)
             errorMessage = ""
         }
+    }
+}
+
+/**
+ * Converts spoken Spanish numbers to digits
+ * Example: "uno dos tres" -> "123"
+ */
+private fun convertSpanishNumbersToDigits(spokenText: String): String {
+    val numberMap = mapOf(
+        "cero" to "0", "uno" to "1", "dos" to "2", "tres" to "3",
+        "cuatro" to "4", "cinco" to "5", "seis" to "6", "siete" to "7", 
+        "ocho" to "8", "nueve" to "9"
+    )
+    
+    val words = spokenText.lowercase().split("\\s+".toRegex())
+    val digits = words.mapNotNull { word -> numberMap[word] }
+    
+    return if (digits.isNotEmpty()) {
+        digits.joinToString("")
+    } else {
+        // If no numbers found, return original text
+        spokenText
     }
 }

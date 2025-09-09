@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Little Diner - Voice Input Demo</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #C7F3E3, #A8E6CF);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .screen {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .screen h2 {
+            text-align: center;
+            color: #2E7D32;
+            margin-bottom: 30px;
+        }
+        
+        .voice-input-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 8px;
+            background: #FAFAFA;
+        }
+        
+        .voice-input-field.recording {
+            border-color: #F44336;
+            background: #FFEBEE;
+        }
+        
+        .text-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font-size: 16px;
+            background: transparent;
+        }
+        
+        .mic-button {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .mic-button.recording {
+            background: #F44336;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .feature-list {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .feature-list h3 {
+            color: #2E7D32;
+            margin-bottom: 16px;
+        }
+        
+        .feature-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .demo-note {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 16px;
+            margin: 20px;
+            border-radius: 4px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-message {
+            color: #F44336;
+            font-size: 14px;
+            margin-top: 8px;
+            padding-left: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #2E7D32; text-align: center;">My Little Diner - Funcionalidad de Voz</h1>
+    
+    <div class="demo-note">
+        <strong>Demostración Visual:</strong> Esta página muestra cómo se verían las pantallas con la nueva funcionalidad de entrada por voz.
+    </div>
+    
+    <!-- Login Screen -->
+    <div class="screen">
+        <h2>Pantalla de Login</h2>
+        <div class="voice-input-field">
+            <input type="text" class="text-input" placeholder="Identifícate" value="">
+            <button class="mic-button" title="Hablar código de identificación">🎤</button>
+        </div>
+        <button class="login-button">Ingresar</button>
+        <p style="text-align: center; margin-top: 16px; color: #666;">
+            💡 Puedes decir: "uno uno siete" para código 117
+        </p>
+    </div>
+    
+    <!-- Login Screen - Recording State -->
+    <div class="screen">
+        <h2>Login - Estado Grabando</h2>
+        <div class="voice-input-field recording">
+            <input type="text" class="text-input" placeholder="Identifícate" value="">
+            <button class="mic-button recording" title="Parar grabación">🎙️</button>
+        </div>
+        <button class="login-button">Ingresar</button>
+        <p style="text-align: center; margin-top: 16px; color: #F44336;">
+            🔴 Escuchando... Di tu código de empleado
+        </p>
+    </div>
+    
+    <!-- Order Screen -->
+    <div class="screen">
+        <h2>Pantalla de Comida</h2>
+        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+            <span style="flex: 1;">🍔 Hamburguesa Clásica</span>
+            <span style="flex: 1;">8.50 €</span>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="number" placeholder="Cant." value="1" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            <div class="voice-input-field" style="flex: 1; margin: 0;">
+                <input type="text" class="text-input" placeholder="Observaciones" value="">
+                <button class="mic-button" title="Dictar observaciones">🎤</button>
+            </div>
+        </div>
+        <button class="login-button">Añadir al Pedido</button>
+        <p style="text-align: center; margin-top: 16px; color: #666;">
+            💡 Puedes decir: "Sin cebolla, extra queso"
+        </p>
+    </div>
+    
+    <!-- Features List -->
+    <div class="feature-list">
+        <h3>🎙️ Características de la Funcionalidad de Voz</h3>
+        <ul>
+            <li>✅ <strong>Reconocimiento en Español:</strong> Optimizado para el idioma español</li>
+            <li>✅ <strong>Conversión de Números:</strong> "uno dos tres" → "123" automáticamente</li>
+            <li>✅ <strong>Feedback Visual:</strong> Ícono de micrófono cambia de color al grabar</li>
+            <li>✅ <strong>Manejo de Errores:</strong> Mensajes claros en español para problemas</li>
+            <li>✅ <strong>Permisos:</strong> Solicita automáticamente permisos de micrófono</li>
+            <li>✅ <strong>Respaldo:</strong> Mantiene funcionalidad de teclado tradicional</li>
+            <li>✅ <strong>Casos de Uso:</strong> Login, notas de comida, observaciones de bebida</li>
+        </ul>
+    </div>
+    
+    <!-- Example Usage -->
+    <div class="feature-list">
+        <h3>📝 Ejemplos de Uso</h3>
+        <ul>
+            <li><strong>Login:</strong> "uno dos seis" → Código: 126</li>
+            <li><strong>Comida:</strong> "Sin cebolla, extra queso, bien cocido"</li>
+            <li><strong>Bebida:</strong> "Con hielo extra, sin azúcar"</li>
+            <li><strong>Especiales:</strong> "Para llevar, salsa aparte"</li>
+        </ul>
+    </div>
+    
+    <script>
+        // Simple demo functionality to show recording state
+        document.querySelectorAll('.mic-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const field = this.closest('.voice-input-field');
+                const input = field.querySelector('.text-input');
+                
+                if (this.classList.contains('recording')) {
+                    // Stop recording
+                    this.classList.remove('recording');
+                    field.classList.remove('recording');
+                    this.textContent = '🎤';
+                    this.title = 'Empezar grabación de voz';
+                    
+                    // Simulate speech result
+                    if (input.placeholder.includes('Identifícate')) {
+                        input.value = '117';
+                    } else {
+                        input.value = 'Sin cebolla, extra queso';
+                    }
+                } else {
+                    // Start recording
+                    this.classList.add('recording');
+                    field.classList.add('recording');
+                    this.textContent = '🎙️';
+                    this.title = 'Parar grabación';
+                    
+                    // Auto-stop after 3 seconds
+                    setTimeout(() => {
+                        if (this.classList.contains('recording')) {
+                            this.click();
+                        }
+                    }, 3000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

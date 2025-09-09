@@ -62,6 +62,7 @@ fun LoginScreen(
                     onLogin(code.value, message, navController, authViewModel, users)
                 }),
                 singleLine = true,
+                convertSpokenNumbersToDigits = true,
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .padding(vertical = 8.dp)
